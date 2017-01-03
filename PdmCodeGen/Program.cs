@@ -1,10 +1,13 @@
-﻿using System;
+﻿/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Ruikuan. All rights reserved.
+ *  Licensed under the Apache-2.0 License. See License in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace PdmCodeGen
@@ -43,7 +46,7 @@ namespace PdmCodeGen
                 foreach (var table in list)
                 {
                     var code = table.Descendants(a + "Code").FirstOrDefault()?.Value;
-                    if (code == null) continue;
+                    if (code == null) continue; // not actual table
 
                     var name = table.Descendants(a + "Name").FirstOrDefault()?.Value;
                     var comment = table.Descendants(a + "Comment").FirstOrDefault()?.Value;
@@ -55,7 +58,7 @@ namespace PdmCodeGen
                     foreach (var col in table.Descendants(o + "Column"))
                     {
                         var colCode = col.Descendants(a + "Code").FirstOrDefault()?.Value;
-                        if (colCode == null) continue;
+                        if (colCode == null) continue; // not actual column
 
                         var colName = col.Descendants(a + "Name").FirstOrDefault()?.Value;
                         var dataType = col.Descendants(a + "DataType").FirstOrDefault()?.Value;
@@ -63,7 +66,8 @@ namespace PdmCodeGen
                         var colComment = col.Descendants(a + "Comment").FirstOrDefault()?.Value;
 
                         var colMandatory = col.Descendants(a + "Mandatory").FirstOrDefault()?.Value;
-                        bool nullable = colMandatory != "1";
+                        // if mandatory, contains <Mandatory>1</Mandatory>. if not, no Mandatory element.
+                        bool nullable = colMandatory != "1"; 
 
                         propertiesBuilder.AppendLine(propertyTemplate.Replace("{ColName}", colName).Replace("{ColCode}", colCode).Replace("{ColComment}", colComment).Replace("{ColDataType}", GetMapType(typeMapping, dataType, nullable)));
                     }
@@ -90,11 +94,11 @@ namespace PdmCodeGen
         static string GetPropertyTemplateContent() => GetFileContent("PropertyTemplate.cs");
         static string GetTypeMappingContent() => GetFileContent("TypeMapping.txt");
 
-        static string CurrentExecPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        static string CurrentExePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         static string GetFileContent(string fileName)
         {
-            var file = Path.Combine(CurrentExecPath, fileName);
+            var file = Path.Combine(CurrentExePath, fileName);
             return File.ReadAllText(file, Encoding.UTF8);
         }
 
@@ -110,7 +114,8 @@ namespace PdmCodeGen
                     if (line == null) break;
 
                     line = line.Trim();
-                    if (line.StartsWith("#")) continue; // mapping file can contain comment
+                    // mapping file may contain comment
+                    if (line.StartsWith("#")) continue; 
 
                     string[] parts = line.Replace('\t', ' ').Split(' ');
                     if (parts.Length < 2) continue;
@@ -144,7 +149,8 @@ namespace PdmCodeGen
 
             if (!nullable)
             {
-                mapType = mapType.Replace("?", string.Empty);
+                //is not nullable, remove "?" for nullable valuetype.
+                mapType = mapType.Replace("?", string.Empty); 
             }
             return mapType;
         }
