@@ -69,7 +69,10 @@ namespace PdmCodeGen
                         // if mandatory, contains <Mandatory>1</Mandatory>. if not, no Mandatory element.
                         bool nullable = colMandatory != "1"; 
 
-                        propertiesBuilder.AppendLine(propertyTemplate.Replace("{ColName}", colName).Replace("{ColCode}", colCode).Replace("{ColComment}", colComment).Replace("{ColDataType}", GetMapType(typeMapping, dataType, nullable)));
+                        propertiesBuilder.AppendLine(
+                            propertyTemplate.Replace("{ColName}", colName)
+                            .Replace("{ColCode}", colCode).Replace("{ColComment}", colComment)
+                            .Replace("{ColDataType}", GetMapType(typeMapping, dataType, nullable)));
                     }
                     classBuilder.Replace("{Cols}", propertiesBuilder.ToString());
 
