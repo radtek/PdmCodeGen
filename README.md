@@ -58,3 +58,7 @@ Pdm files are physical data model files created by Sybase PowerDesigner. We use 
     ```
 
     It will generate files in "Code" sub directory of your current directory.
+
+### Dependencies
+
+* .NET Framework 4.0
