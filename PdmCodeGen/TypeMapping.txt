@@ -1,0 +1,12 @@
+﻿bit bool?
+uniqueidentifier Guid?
+nvarchar string
+varchar string
+text string
+ntext string
+date DateTime?
+int int?
+bigint long?
+datetime DateTime?
+image byte[]
+tinyint byte?
