@@ -62,3 +62,7 @@ Pdm files are physical data model files created by Sybase PowerDesigner. We use 
 ### Dependencies
 
 * .NET Framework 4.0
+
+### Binary
+  
+[Current Release](https://github.com/Ruikuan/PdmCodeGen/raw/master/Download/PdmCodeGen_Release.zip)
