@@ -34,49 +34,29 @@ namespace PdmCodeGen
 
             using (FileStream stream = File.OpenRead(fileName))
             {
-                XDocument doc = XDocument.Load(stream);
-                XNamespace o = "object";
-                XNamespace a = "attribute";
+                var tables = PdmHelper.GetTables(stream);
 
                 string classTemplate = GetClassTemplateContent();
                 string propertyTemplate = GetPropertyTemplateContent();
                 var typeMapping = GetMapping();
 
-                var list = doc.Descendants(o + "Table");
-                foreach (var table in list)
+                foreach (var table in tables)
                 {
-                    var code = table.Descendants(a + "Code").FirstOrDefault()?.Value;
-                    if (code == null) continue; // not actual table
-
-                    var name = table.Descendants(a + "Name").FirstOrDefault()?.Value;
-                    var comment = table.Descendants(a + "Comment").FirstOrDefault()?.Value;
-
                     StringBuilder classBuilder = new StringBuilder(classTemplate);
-                    classBuilder.Replace("{TableName}", name).Replace("{TableCode}", code).Replace("{TableComment}", comment);
+                    classBuilder.Replace("{TableName}", table.Name).Replace("{TableCode}", table.Code).Replace("{TableComment}", table.Comment);
 
                     StringBuilder propertiesBuilder = new StringBuilder();
-                    foreach (var col in table.Descendants(o + "Column"))
+                    foreach (var col in table.Columns)
                     {
-                        var colCode = col.Descendants(a + "Code").FirstOrDefault()?.Value;
-                        if (colCode == null) continue; // not actual column
-
-                        var colName = col.Descendants(a + "Name").FirstOrDefault()?.Value;
-                        var dataType = col.Descendants(a + "DataType").FirstOrDefault()?.Value;
-
-                        var colComment = col.Descendants(a + "Comment").FirstOrDefault()?.Value;
-
-                        var colMandatory = col.Descendants(a + "Mandatory").FirstOrDefault()?.Value;
-                        // if mandatory, contains <Mandatory>1</Mandatory>. if not, no Mandatory element.
-                        bool nullable = colMandatory != "1"; 
-
                         propertiesBuilder.AppendLine(
-                            propertyTemplate.Replace("{ColName}", colName)
-                            .Replace("{ColCode}", colCode).Replace("{ColComment}", colComment)
-                            .Replace("{ColDataType}", GetMapType(typeMapping, dataType, nullable)));
+                            propertyTemplate.Replace("{ColName}", col.Name)
+                            .Replace("{ColCode}", col.Code)
+                            .Replace("{ColComment}", col.Comment)
+                            .Replace("{ColDataType}", GetMapType(typeMapping, col.DataType, !col.Mandatory)));
                     }
                     classBuilder.Replace("{Cols}", propertiesBuilder.ToString());
 
-                    SaveToFile(code, classBuilder.ToString());
+                    SaveToFile(table.Code, classBuilder.ToString());
                 }
             }
         }
@@ -118,7 +98,7 @@ namespace PdmCodeGen
 
                     line = line.Trim();
                     // mapping file may contain comment
-                    if (line.StartsWith("#")) continue; 
+                    if (line.StartsWith("#")) continue;
 
                     string[] parts = line.Replace('\t', ' ').Split(' ');
                     if (parts.Length < 2) continue;
@@ -153,7 +133,7 @@ namespace PdmCodeGen
             if (!nullable)
             {
                 //is not nullable, remove "?" for nullable valuetype.
-                mapType = mapType.Replace("?", string.Empty); 
+                mapType = mapType.Replace("?", string.Empty);
             }
             return mapType;
         }
