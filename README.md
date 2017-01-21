@@ -59,6 +59,16 @@ Pdm files are physical data model files created by Sybase PowerDesigner. We use 
 
     It will generate files in "Code" sub directory of your current directory.
 
+## Tips
+
+You can create template files and type mapping file in current directory with prefix "_", if that, PdmCodeGen use these content to generate code files.
+
+```
+_ClassTemplate.cs
+_PropertyTemplate.cs
+_TypeMapping.txt
+```
+
 ### Dependencies
 
 * .NET Framework 4.0

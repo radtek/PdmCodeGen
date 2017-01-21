@@ -81,7 +81,16 @@ namespace PdmCodeGen
 
         static string GetFileContent(string fileName)
         {
-            var file = Path.Combine(CurrentExePath, fileName);
+            string file = null;
+            string tryCurrentPathFileName = Path.Combine(CurrentPath, $"_{fileName}");
+            if (File.Exists(tryCurrentPathFileName))
+            {
+                file = tryCurrentPathFileName;
+            }else
+            {
+                file = Path.Combine(CurrentExePath, fileName);
+            }
+            
             return File.ReadAllText(file, Encoding.UTF8);
         }
 
