@@ -16,15 +16,27 @@ namespace PdmCodeGen
     {
         static void Main(string[] args)
         {
+            string fileName = null;
             if (args.Length < 1)
             {
-                Console.WriteLine("Please input filename.");
-                return;
+                var pdmFiles = Directory.GetFiles(CurrentPath, "*.pdm", SearchOption.TopDirectoryOnly);
+                if (pdmFiles.Length == 1)
+                {
+                    fileName = pdmFiles[0];
+                }
+                else
+                {
+                    Console.WriteLine("Please input filename.");
+                    return;
+                }
             }
-            string fileName = args[0];
-            if (!File.Exists(fileName))
+            else
             {
-                fileName = Path.Combine(CurrentPath, args[0]);
+                fileName = args[0];
+                if (!File.Exists(fileName))
+                {
+                    fileName = Path.Combine(CurrentPath, args[0]);
+                }
             }
             if (!File.Exists(fileName))
             {
@@ -32,7 +44,12 @@ namespace PdmCodeGen
                 return;
             }
 
-            using (FileStream stream = File.OpenRead(fileName))
+            ExtractAndGen(fileName);
+        }
+
+        private static void ExtractAndGen(string fileName)
+        {
+            using (FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 var tables = PdmHelper.GetTables(stream);
 
@@ -86,11 +103,12 @@ namespace PdmCodeGen
             if (File.Exists(tryCurrentPathFileName))
             {
                 file = tryCurrentPathFileName;
-            }else
+            }
+            else
             {
                 file = Path.Combine(CurrentExePath, fileName);
             }
-            
+
             return File.ReadAllText(file, Encoding.UTF8);
         }
 
