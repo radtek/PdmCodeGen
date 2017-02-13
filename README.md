@@ -59,6 +59,13 @@ Pdm files are physical data model files created by Sybase PowerDesigner. We use 
 
     It will generate files in "Code" sub directory of your current directory.
 
+    If your current directory has only one pdm file, you can only type:
+    
+    ```
+    PdmCodeGen
+    ```
+    Don't have to specify a file name.
+
 ## Tips
 
 You can create template files and type mapping file in current directory with prefix "_", if that, PdmCodeGen use these content to generate code files.
