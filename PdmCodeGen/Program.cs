@@ -43,8 +43,9 @@ namespace PdmCodeGen
                 Console.WriteLine("File not exists.");
                 return;
             }
-
+            Console.WriteLine($"Extract file:\t{fileName}");
             ExtractAndGen(fileName);
+            Console.WriteLine("Gen success.");
         }
 
         private static void ExtractAndGen(string fileName)
@@ -87,6 +88,7 @@ namespace PdmCodeGen
             }
             string outputFile = Path.Combine(outputPath, $"{code}.cs");
             File.WriteAllText(outputFile, content, Encoding.UTF8);
+            Console.WriteLine($"{outputFile} \t created.");
         }
 
         static string CurrentPath => Directory.GetCurrentDirectory();
